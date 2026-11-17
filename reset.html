@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reset MasjidApps</title>
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #0B5C4B;
+      color: white;
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      text-align: center;
+      padding: 24px;
+    }
+    .card {
+      max-width: 360px;
+    }
+    h1 { font-size: 22px; margin: 0 0 12px; }
+    p { opacity: 0.9; line-height: 1.45; }
+    a {
+      display: inline-block;
+      margin-top: 18px;
+      background: #D4AF37;
+      color: #0A241C;
+      text-decoration: none;
+      font-weight: 800;
+      padding: 12px 18px;
+      border-radius: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Clearing this phone…</h1>
+    <p id="msg">Removing old cache so MasjidApps can open.</p>
+    <a id="open" href="/" style="display:none">Open MasjidApps</a>
+  </div>
+  <script>
+    (async function () {
+      try {
+        if ('serviceWorker' in navigator) {
+          const regs = await navigator.serviceWorker.getRegistrations();
+          await Promise.all(regs.map((r) => r.unregister()));
+        }
+      } catch (_) {}
+      try {
+        if (window.caches) {
+          const keys = await caches.keys();
+          await Promise.all(keys.map((k) => caches.delete(k)));
+        }
+      } catch (_) {}
+      try {
+        localStorage.clear();
+        sessionStorage.clear();
+      } catch (_) {}
+      document.getElementById('msg').textContent = 'Done. Opening the app…';
+      setTimeout(function () {
+        location.replace('/?fresh=' + Date.now());
+      }, 600);
+    })();
+  </script>
+</body>
+</html>
